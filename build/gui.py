@@ -29,12 +29,14 @@ ser = None
 #def relative_to_assets(path: str) -> Path:
  #   return ASSETS_PATH / Path(path)
 def relative_to_assets(path: str) -> Path:
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = Path(__file__).parent
+    return ASSETS_PATH / Path(path)
+# def relative_to_assets(path: str) -> Path:
+#     try:
+#         base_path = sys._MEIPASS
+#     except Exception:
+#         base_path = Path(__file__).parent
 
-    return Path(base_path) / "assets" / "frame0" / Path(path)
+#     return Path(base_path) / "assets" / "frame0" / Path(path)
 
 window = Tk()
 
@@ -99,6 +101,7 @@ def read_serial_data():
             continue
         try:
             line = ser.readline().decode('utf-8').rstrip()
+            print(line)
             data = line.split(',')
             #print(data)
             if data[0] == "data":
@@ -156,20 +159,23 @@ def update_plot(dutycycle,ivolt,ovolt):
     time = np.arange(len(dutycycle)) / 10  # assuming 10 data points per second
     ax.clear()
     ax.plot(time,dutycycle)
-    ax.set_title('Duty Cycle', color='black', fontsize=14, fontname='Inter Bold')  # add title to the first plot
+    ax.set_title('Duty Cycle', color='black', fontsize=14, fontname='Arial')  # add title to the first plot
     ax.set_ylim([0, 110])  # set y-axis limits
-    ax.set_ylabel('Duty Cycle (%)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
-    ax.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
+    ax.set_ylabel('Duty Cycle (%)', color='black', fontsize=10, fontname='Arial')  # add y-axis label
+    ax.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Arial')  # add x-axis label
     canvas1.draw()
 
     ax2.clear()
+    if len(time) != len(ivolt):
+        print(f"Error: time and ivolt arrays have different lengths: {len(time)} and {len(ivolt)}")
+        #return
     ax2.plot(time,ivolt, label='Input Voltage')
     ax2.plot(time,ovolt, label='Output Voltage')
-    ax2.set_title('Input and Output Voltage', color='black', fontsize=14, fontname='Inter Bold')  # add title to the first plot
+    ax2.set_title('Input and Output Voltage', color='black', fontsize=14, fontname='Arial')  # add title to the first plot
     ax2.legend(loc='upper right', fontsize=8, facecolor='#DCDCDC', labelcolor='white',  edgecolor='white', title_fontsize='10')  # add legend
     ax2.set_ylim([0, 40])  # set y-axis limits
-    ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
-    ax2.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
+    ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Arial')  # add y-axis label
+    ax2.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Arial')  # add x-axis label
     canvas2.draw()
 
 def update_gui(canvas_texts):
@@ -262,7 +268,7 @@ canvas_texts['duty_cycle_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial ", 30 * -1)
 )
 
 
@@ -273,7 +279,7 @@ canvas_texts['input_current_text'] = canvas.create_text(
     anchor="center",
     text="NaN", 
     fill="#464646",
-    font=("Inter Bold", 28 * -1)
+    font=("Arial", 28 * -1)
 )
 canvas_texts['input_voltage_text'] = canvas.create_text(
     440.0+37.0,
@@ -281,7 +287,7 @@ canvas_texts['input_voltage_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial", 30 * -1)
 )
 canvas_texts['input_power_text'] = canvas.create_text(
     545.0+37.0,
@@ -289,7 +295,7 @@ canvas_texts['input_power_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial", 30 * -1)
 )
 canvas_texts['output_current_text'] = canvas.create_text(
     669.0+55.0,
@@ -297,7 +303,7 @@ canvas_texts['output_current_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 28 * -1)
+    font=("Arial", 28 * -1)
 )
 canvas_texts['output_voltage_text'] = canvas.create_text(
     781.0+56.0,
@@ -305,7 +311,7 @@ canvas_texts['output_voltage_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial", 30 * -1)
 )
 
 canvas_texts['output_power_text'] = canvas.create_text(
@@ -314,7 +320,7 @@ canvas_texts['output_power_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial", 30 * -1)
 )
 canvas_texts['gain_text'] = canvas.create_text(
     998.0+56.0,
@@ -322,7 +328,7 @@ canvas_texts['gain_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 30 * -1)
+    font=("Arial", 30 * -1)
 )
 canvas_texts['efficiency_text'] = canvas.create_text(
     1183.0+56.0,
@@ -330,7 +336,7 @@ canvas_texts['efficiency_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 35 * -1)
+    font=("Arial", 35 * -1)
 )
 canvas_texts['current_req_volt_text'] = canvas.create_text(
     258.0+61.0,
@@ -338,7 +344,7 @@ canvas_texts['current_req_volt_text'] = canvas.create_text(
     anchor="center",
     text="NaN",
     fill="#464646",
-    font=("Inter Bold", 24 * -1)
+    font=("Arial", 24 * -1)
 )
 
 def only_numeric_input(P):
@@ -357,7 +363,7 @@ def only_numeric_input(P):
 validate_command = window.register(only_numeric_input)  # registers a Tcl to Python callback
 
 req_volt_entry = Entry(
-    font=("Inter Bold", 20),
+    font=("Arial", 20),
     bd=0,
     bg="#B6B6B6",
     fg="#464646",
@@ -375,7 +381,7 @@ req_volt_entry.place(
 
 # Entry for Kp
 kp_entry = Entry(
-    font=("Inter Bold", 20),
+    font=("Arial", 20),
     bd=0,
     bg="#B6B6B6",
     fg="#464646",
@@ -393,7 +399,7 @@ kp_entry.place(
 
 # Entry for Ki
 ki_entry = Entry(
-    font=("Inter Bold", 20),
+    font=("Arial", 20),
     bd=0,
     bg="#B6B6B6",
     fg="#464646",
@@ -411,7 +417,7 @@ ki_entry.place(
 
 # Entry for Kd
 kd_entry = Entry(
-    font=("Inter Bold", 20),
+    font=("Arial", 20),
     bd=0,
     bg="#B6B6B6",
     fg="#464646",
@@ -457,7 +463,7 @@ def send_to_arduino():
 
 button = Button(
     text="",
-    font=("Inter Bold", 10),
+    font=("Arial", 10),
     bd=0,
     image=button_image,  # Set the image as the button background
     compound="center",  # This will ensure the text is centered over the image
@@ -489,16 +495,16 @@ combobox.bind("<<ComboboxSelected>>", on_select)
 
 # Create the canvas_tk to display the matplotlib figure
 canvas1 = FigureCanvasTkAgg(fig, master=window)
-ax.set_xlabel('Time (10 points = 1s)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
-ax.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
+ax.set_xlabel('Time (10 points = 1s)', color='black', fontsize=10, fontname='Arial')  # add x-axis label
+ax.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Arial')  # add y-axis label
 # Adjust the bottom margin
 fig.subplots_adjust(bottom=0.2)
 canvas1.draw()
 canvas1.get_tk_widget().place(x=150, y=365, width=500, height=340) 
 
 canvas2 = FigureCanvasTkAgg(fig2, master=window)
-ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
-ax2.set_xlabel('Time (10 points = 1s)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
+ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Arial')  # add y-axis label
+ax2.set_xlabel('Time (10 points = 1s)', color='black', fontsize=10, fontname='Arial')  # add x-axis label
 # Adjust the bottom margin
 fig2.subplots_adjust(bottom=0.2)
 canvas2.draw()
