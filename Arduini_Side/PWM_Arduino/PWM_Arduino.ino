@@ -45,7 +45,7 @@ void setup() {
   // Turn the PID controller on
   myPID.SetMode(AUTOMATIC);
   //myPID.SetControllerDirection(REVERSE);  // Reverse the direction of the controller
-  Setpoint = 8.0;
+  Setpoint = 20.0;
 
 }
 

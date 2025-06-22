@@ -98,7 +98,16 @@ def read_serial_data():
             time.sleep(1)  # Wait for a while before checking again
             continue
         try:
-            line = ser.readline().decode('utf-8').rstrip()
+            # Read the raw bytes from serial
+            raw_data = ser.readline()
+            
+            # Try to decode with 'replace' option to handle invalid bytes
+            line = raw_data.decode('utf-8', errors='replace').rstrip()
+            
+            # Skip processing if the data looks corrupted (contains replacement chars)
+            if '�' in line:
+                print("Skipped corrupted data")
+                continue
             data = line.split(',')
             #print(data)
             if data[0] == "data":
@@ -187,7 +196,7 @@ def update_gui(canvas_texts):
         canvas.itemconfig(canvas_texts['gain_text'], text=f"{gain}x")
         canvas.itemconfig(canvas_texts['efficiency_text'], text=f"{(effiecency)}%")
         canvas.update()
-        update_plot(duty_cycle_values, input_voltage_values, output_voltage_values)
+        #update_plot(duty_cycle_values, input_voltage_values, output_voltage_values)
 
 
 canvas = Canvas(
