@@ -160,26 +160,44 @@ def read_serial_data():
 
 
 
-def update_plot(dutycycle,ivolt,ovolt):
-     # Create a time array
-    time = np.arange(len(dutycycle)) / 10  # assuming 10 data points per second
-    ax.clear()
-    ax.plot(time,dutycycle)
-    ax.set_title('Duty Cycle', color='black', fontsize=14, fontname='Inter Bold')  # add title to the first plot
-    ax.set_ylim([0, 110])  # set y-axis limits
-    ax.set_ylabel('Duty Cycle (%)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
-    ax.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
-    canvas1.draw()
+def update_plot(dutycycle, ivolt, ovolt):
+    try:
+        # Find the minimum length of all arrays to ensure they match
+        min_length = min(len(dutycycle), len(ivolt), len(ovolt))
+        
+        # Trim all arrays to the same length
+        dutycycle_trim = dutycycle[-min_length:] if min_length > 0 else []
+        ivolt_trim = ivolt[-min_length:] if min_length > 0 else []
+        ovolt_trim = ovolt[-min_length:] if min_length > 0 else []
+        
+        # Only try to plot if we have data
+        if min_length > 0:
+            # Create a time array matching the correct length
+            time = np.arange(min_length) / 10  # assuming 10 data points per second
+            
+            # Plot duty cycle
+            ax.clear()
+            ax.plot(time, dutycycle_trim)
+            ax.set_title('Duty Cycle', color='black', fontsize=14, fontname='Inter Bold')
+            ax.set_ylim([0, 110])
+            ax.set_ylabel('Duty Cycle (%)', color='black', fontsize=10, fontname='Inter Bold')
+            ax.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')
+            canvas1.draw()
 
-    ax2.clear()
-    ax2.plot(time,ivolt, label='Input Voltage')
-    ax2.plot(time,ovolt, label='Output Voltage')
-    ax2.set_title('Input and Output Voltage', color='black', fontsize=14, fontname='Inter Bold')  # add title to the first plot
-    ax2.legend(loc='upper right', fontsize=8, facecolor='#DCDCDC', labelcolor='white',  edgecolor='white', title_fontsize='10')  # add legend
-    ax2.set_ylim([0, 40])  # set y-axis limits
-    ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Inter Bold')  # add y-axis label
-    ax2.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')  # add x-axis label
-    canvas2.draw()
+            # Plot voltages
+            ax2.clear()
+            ax2.plot(time, ivolt_trim, label='Input Voltage')
+            ax2.plot(time, ovolt_trim, label='Output Voltage')
+            ax2.set_title('Input and Output Voltage', color='black', fontsize=14, fontname='Inter Bold')
+            ax2.legend(loc='upper right', fontsize=8, facecolor='#DCDCDC', labelcolor='white', edgecolor='white', title_fontsize='10')
+            ax2.set_ylim([0, 40])
+            ax2.set_ylabel('Voltage (V)', color='black', fontsize=10, fontname='Inter Bold')
+            ax2.set_xlabel('Time (seconds)', color='black', fontsize=10, fontname='Inter Bold')
+            canvas2.draw()
+    except Exception as e:
+        print(f"Error in plotting: {str(e)}")
+        # Continue execution even if plotting fails
+        pass
 
 def update_gui(canvas_texts):
     # Check if there is data in the queue
@@ -196,7 +214,10 @@ def update_gui(canvas_texts):
         canvas.itemconfig(canvas_texts['gain_text'], text=f"{gain}x")
         canvas.itemconfig(canvas_texts['efficiency_text'], text=f"{(effiecency)}%")
         canvas.update()
-        #update_plot(duty_cycle_values, input_voltage_values, output_voltage_values)
+        try:
+            update_plot(duty_cycle_values, input_voltage_values, output_voltage_values)
+        except Exception as e:
+            print(f"Error updating plot: {str(e)}")
 
 
 canvas = Canvas(
